@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html class="userdata" lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../layui/css/layui.css"/>
+</head>
+<body class="loginBody">
+<br/><br/><br/><br/>
+<form class="layui-form" >
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">用户名:</label>
+        <div class="layui-input-block">
+            <input type="text" id="username" name="username" style="width: 500px" autocomplete="off"
+                    th:value="${session.user.username}" class="layui-input" disabled/>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">密码:</label>
+        <div class="layui-input-block">
+            <input type="password" id="password" name="password" style="width: 500px" autocomplete="off" placeholder="请输入新的密码" class="layui-input" lay-verify="required"/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-block" lay-filter="demo2" lay-submit>提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script>
+    layui.use(['form','upload','layer'],function () {
+        var form = layui.form,
+            upload = layui.upload,
+            $ = layui.jquery,
+            layer = layui.layer;
+        //form表单的提交
+
+        form.on('submit(demo2)', function(data){
+
+            $.ajax({ //jquery的ajax形式
+                type: 'post',//请求的方式
+                url: '../index/pwdUpdata',//向后台发送请求的地址
+                data: {
+                    'username':data.field.username,
+                    'password':data.field.password
+                },
+                dataType:'json',
+                success:function (res) {
+                    if(res.code == 200){
+                        // 访问主页
+                        layer.msg(res.msg);
+                        setTimeout(function () {
+                            window.location.href ="../index/logout";
+                        }, 1000)
+
+                    }else{
+                        layer.alert(res.msg,{icon:2});
+                    }
+                }
+            });
+            return false;
+
+        });
+    });
+
+
+</script>
+</body>
+</html>

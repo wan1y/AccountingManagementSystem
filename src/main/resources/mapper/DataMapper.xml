@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="team.team404.dao.DataMapper">
+  <resultMap id="BaseResultMap" type="team.team404.pojo.Data">
+    <id column="no" jdbcType="INTEGER" property="no" />
+    <result column="info" jdbcType="VARCHAR" property="info" />
+    <result column="money" jdbcType="REAL" property="money" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="time" jdbcType="DATE" property="time" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="username" jdbcType="INTEGER" property="userName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    no, info, money, status, time, user_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from data
+    where no = #{no,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from data
+    where no = #{no,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="team.team404.pojo.Data">
+    insert into data (info, money, time, user_id)
+    values (#{info,jdbcType=VARCHAR}, #{money,jdbcType=REAL},
+      #{time,jdbcType=DATE}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="team.team404.pojo.Data">
+    insert into data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="no != null">
+        no,
+      </if>
+      <if test="info != null">
+        info,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="no != null">
+        #{no,jdbcType=INTEGER},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=REAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=DATE},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="team.team404.pojo.Data">
+    update data
+    <set>
+      <if test="info != null">
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null">
+        money = #{money,jdbcType=REAL},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=DATE},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where no = #{no,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="team.team404.pojo.Data">
+    update data
+    set info = #{info,jdbcType=VARCHAR},
+      money = #{money,jdbcType=REAL},
+      time = #{time,jdbcType=DATE},
+      user_id = #{userId,jdbcType=INTEGER}
+    where no = #{no,jdbcType=INTEGER}
+  </update>
+  <update id="updataStatus">
+    update data
+    set status = #{status} where no = #{no}
+  </update>
+  <select id="selectAllByField" resultMap="BaseResultMap">
+    select no,username,money,status,data.info,time,user_id
+    from data,user
+    where user_id=#{userId} and username=#{username}
+    order by ${field} ${order}
+    limit #{startPos,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="selectAllByCondition" resultMap="BaseResultMap">
+    select no,username,money,status,data.info,time,user_id
+    from data,user
+    where user_id=#{userId} and username=#{username}
+    <if test="info!=null">
+      and data.info LIKE '%${info}%'
+    </if>
+    <if test="moneymin!=null">
+      and money >= #{moneymin}
+    </if>
+
+    <if test="moneymax!=null">
+      and money &lt;= #{moneymax}
+    </if>
+    <if test="status!=null">
+      and status=#{status}
+    </if>
+    order by no desc
+    limit #{startPos,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="getIncome" resultMap="BaseResultMap">
+    select sum(ifnull(total_num,0)) as money from
+MONTH_TABLE MT left join
+(
+SELECT T.*,MONTH(time)+0 M FROM (
+    select sum(money)  TOTAL_NUM,time from data where user_id=#{userId} and status=#{status} and time like '${year}-%' group by time
+) T) t on t.m = MT.MONTH_NUM
+GROUP BY MT.MONTH_NUM
+order by MT.MONTH_NUM;
+  </select>
+
+  <select id="getExpend" resultMap="BaseResultMap">
+    select sum(ifnull(total_num,0)) as money from
+MONTH_TABLE MT left join
+(
+SELECT T.*,MONTH(time)+0 M FROM (
+    select sum(money)  TOTAL_NUM,time from data where user_id=#{userId} and status=#{status} and time like '${year}-%' group by time
+) T) t on t.m = MT.MONTH_NUM
+GROUP BY MT.MONTH_NUM
+order by MT.MONTH_NUM;
+  </select>
+</mapper>

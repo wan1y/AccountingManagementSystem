@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>收支统计</title>
+	<link rel="stylesheet" type="text/css" href="../layui/css/layui.css">
+
+	<script src="../js/echarts.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+</head>
+</head>
+<body>
+
+<div class="layui-inline">
+	<label class="layui-form-label">年选择器</label>
+	<div class="layui-input-inline">
+		<input type="text" class="layui-input" id="test2" placeholder="yyyy">
+	</div>
+</div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 1000px;height:400px;"></div>
+<script type="text/javascript">
+	searchByTime(2020)
+	function searchByTime(date) {
+		// 基于准备好的dom，初始化echarts实例
+		var myChart = echarts.init(document.getElementById('main'));
+
+		// 指定图表的配置项和数据
+		var option = {
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+					type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+				}
+			},
+			legend: {
+				data: ['利润', '支出', '收入']
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			xAxis: [
+				{
+					type: 'value'
+				}
+			],
+			yAxis: [
+				{
+					type: 'category',
+					axisTick: {
+						show: false
+					},
+					data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+				}
+			],
+			series: [
+				{
+					name: '收入',
+					type: 'bar',
+					stack: '总量',
+					label: {
+						show: true,
+						position: 'right'
+					},
+					data: (function () {
+						var arr = [];
+						$.ajax(
+								{
+									type: 'post',
+									url: "../result/getIncome",
+									dataType: "text",
+									async: false,
+									data: { //表示向后台传入的参数 key-value
+										'year': date,
+									},
+									success: function (data) {
+										var rows = eval(data);
+										//调用函数获取值，转换成数组模式
+										for (var i = 0; i < rows.length; i++) {
+											arr.push(rows[i].money);
+										}
+									}
+								});
+						return arr;
+					})()
+
+				},
+				{
+					name: '支出',
+					type: 'bar',
+					stack: '总量',
+					label: {
+						show: true,
+						position: 'left'
+					},
+					data: (function () {
+						var arr = [];
+						$.ajax(
+								{
+									type: 'post',
+									url: "../result/getExpend",
+									dataType: "text",
+									async: false,
+									data: { //表示向后台传入的参数 key-value
+										'year': date,
+									},
+									success: function (data) {
+										var rows = eval(data);
+										//调用函数获取值，转换成数组模式
+										for (var i = 0; i < rows.length; i++) {
+											arr.push(0 - rows[i].money);
+										}
+									}
+								});
+						return arr;
+					})()
+				}
+			]
+		};
+
+
+		// 使用刚指定的配置项和数据显示图表。
+		myChart.setOption(option);
+		//默认是合并原数据，加上true表示不合并配置，否则原数据依然存在图表上
+		//myChart.setOption(option, true);　
+	}
+</script>
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script>
+	layui.use('laydate', function() {
+		var laydate = layui.laydate;
+
+		//年选择器
+		laydate.render({
+			elem: '#test2'
+			,type: 'year'
+			,done: function(value) {
+				//	alert(value); //得到日期生成的值，如：2017-08-18
+				searchByTime(value);
+			}
+		});
+	});
+</script>
+</body>
+</html>

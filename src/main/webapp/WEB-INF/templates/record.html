@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../layui/css/layui.css">
+</head>
+
+<body>
+
+<div class="layui-collapse">
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">筛选</h2>
+        <div class="layui-colla-content layui-show">
+            <form class="layui-form" lay-filter="component-form-group" id="search_submits" onsubmit="return false">
+                <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-useradmin-formlist">
+
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">金额范围</label>
+                        <div class="layui-input-inline" style="width: 100px;">
+                            <input type="text" id="moneymin" name="moneymin" placeholder="￥" autocomplete="off" class="layui-input">
+                        </div>
+                        -
+                        <div class="layui-input-inline" style="width: 100px;">
+                            <input type="text" id="moneymax" name="moneymax" placeholder="￥" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">备注：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" id="info" name="info" placeholder="备注"  width="80px">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">收支状态</label>
+                        <div class="layui-input-block">
+                            <select name="status" id="status" lay-filter="" lay-search>
+                                <option value="">选择状态</option>
+                                <option value="1">收入</option>
+                                <option value="0">支出</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+
+                    <div class="layui-inline">
+                        <button class="layui-btn" lay-submit="search_submits" lay-filter="reloadlst_submit" id="re">查询</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<table class="layui-hide" id="record" lay-filter="test"></table>
+
+<!--行工具栏的自定义按钮-->
+<script type="text/html" id="barDemo" >
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script type="text/html" id="headDemo">
+    <div class="layui-btn-group">
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" lay-event="add">
+            <i class="layui-icon">&#xe654;</i>
+        </button>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" lay-event="delete">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+    </div>
+</script>
+
+</body>
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script type="text/javascript" src="../js/record.js"></script>
+
+</html>

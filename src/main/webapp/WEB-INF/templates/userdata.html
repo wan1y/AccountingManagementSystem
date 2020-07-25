@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="userdata" lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../layui/css/layui.css"/>
+</head>
+
+<body class="loginBody">
+    <form class="layui-form" >
+        <div class="layui-form-item" style = "display:none">
+            <label class="layui-form-label">用户ID</label>
+            <div class="layui-input-block">
+                <input type="text" id="userId" name="userId" th:value="${session.user.id}" required lay-verify="required" autocomplete="off"
+                       class="layui-input" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">头像名称：</label>
+            <div class="layui-input-block">
+                <input disabled type="text"  th:value="${session.user.icon}" id="iconPath"  name="iconPath" lay-verify="title" autocomplete="off" style="width: 500px" class="layui-input" >
+                <button type="button" class="layui-btn" id="uploadIcon"><i class="layui-icon"></i>上传头像</button>
+            </div>
+
+
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">昵称:</label>
+            <div class="layui-input-block">
+                <input type="text" id="username" name="username" style="width: 500px" autocomplete="off"
+                placeholder="修改用户名：" th:value="${session.user.username}" class="layui-input"/>
+            </div>
+        </div>
+<!--        <div class="layui-form-item layui-form-text">-->
+<!--            <label class="layui-form-label">密码:</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input type="text" id="password" name="password" style="width: 500px" autocomplete="off"-->
+<!--                       placeholder="修改用户密码：" class="layui-input"/>-->
+<!--            </div>-->
+
+<!--        </div>-->
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">简介:</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入个人简介：" th:value="${session.user.info}" class="layui-textarea" style="width: 500px;" name="userDesc" autocomplete="off"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-block" lay-filter="demo" lay-submit>提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    <script type="text/javascript" src="../layui/layui.js"></script>
+    <script>
+        layui.use(['form','upload','layer'],function () {
+            var form = layui.form,
+                upload = layui.upload,
+                $ = layui.jquery,
+                layer = layui.layer
+
+            //头像的上传操作
+            var uploadInst = upload.render({
+                elem: '#uploadIcon'
+                ,url: '../img/up' //改成您自己的上传接口
+                ,before: function(obj){
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function(index, file, result){
+                        $('#demo1').attr('src', result); //图片链接（base64）
+                    });
+                }
+                ,done: function(res){
+                    //如果上传失败
+                    if(res.code > 0){
+                        return layer.msg('上传失败');
+                    }
+                    else{
+                        layer.msg('上传成功');
+                        $("#iconPath").val(res.msg)
+                    }
+
+                    //上传成功
+                },error: function(){
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            });
+
+            //form表单的提交
+
+            form.on('submit(demo)', function(data){
+
+                $.ajax({ //jquery的ajax形式
+                    type: 'post',//请求的方式
+                    url: '../index/userUpdata',//向后台发送请求的地址
+                    data: {
+                        'info':data.field.userDesc,
+                        'username':data.field.username,
+                        'icon':data.field.iconPath,
+                        'id':data.field.userId
+                    },
+                    dataType:'json',
+                    success:function (res) {
+                        if(res.code == 200){
+                            layer.msg(res.msg);
+                            setTimeout(function () {
+                                window.location.href ="../index/index";
+                            }, 1000)
+                        }else{
+                            layer.alert(res.msg,{icon:2});
+                        }
+                    }
+                });
+                return false;
+
+            });
+        });
+
+
+    </script>
+</body>
+</html>

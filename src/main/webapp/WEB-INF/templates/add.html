@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../layui/css/layui.css"/>
+</head>
+<body>
+<!--这里是弹出层的表单信息
+        表单的id用于表单的选择，style是在本页隐藏，只有点击编辑才会弹出-->
+<div class="layui-row" id="popUpdateTest">
+    <div class="layui-col-md10">
+        <form class="layui-form " action="" style="margin-top:20px; margin-right:20%" lay-filter="recordform">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">金额</label>
+                <div class="layui-input-block">
+                    <input type="text" id="money" name="money" required lay-verify="required|number" autocomplete="off"
+                           placeholder="请输入金额" class="layui-input"/>
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input type="text" id="info" name="info" autocomplete="off"
+                           placeholder="请输入备注" class="layui-input"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">时间</label>
+                <div class="layui-input-block">
+                    <input type="text" id="time" name="time" required lay-verify="required|date" autocomplete="off"
+                           placeholder="请输入时间(yyyy-mm-dd)" class="layui-input"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top:40px">
+                <div class="layui-input-block">
+                    <button class="layui-btn  layui-btn-submit " lay-submit="" lay-filter="demo11">提交</button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script>
+    layui.use(['form','jquery'],function (data) {
+        var form = layui.form;
+        var $ = layui.jquery;
+        form.on('submit(demo11)', function(data){
+            $.ajax({ //jquery的ajax形式
+                type: 'post',//请求的方式
+                url: '../test/add',//向后台发送请求的地址
+                data:data.field,
+                dataType:'json',
+                success:function (res) {
+                    if (res.code === 200) {
+                        layer.msg(res.msg);
+                        setTimeout(function () {
+                            parent.location.reload();
+                        }, 1000)
+                    }else {
+                        layer.alert(res.msg, {icon: 2});
+                    }
+
+                }
+            });
+            return false;
+        });
+
+    })
+</script>
+</html>
