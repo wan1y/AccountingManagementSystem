@@ -1,4 +1,4 @@
 # AccountingManagementSystem
 
 
-SSM+layui+mysql
+SSM+layui+mysql+test
